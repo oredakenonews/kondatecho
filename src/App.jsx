@@ -62,10 +62,18 @@ export default function App() {
     setShowPicker(null);
   };
   const rndAll = () => {
-    const s={}; checkedDays.forEach((c,i)=>{ if(c) s[i]=allMenus[Math.floor(Math.random()*allMenus.length)]; });
+    const shuffled = [...allMenus].sort(()=>Math.random()-0.5);
+    const s={};
+    let idx=0;
+    checkedDays.forEach((c,i)=>{ if(c){ s[i]=shuffled[idx % shuffled.length]; idx++; } });
     setSelectedMenus(s);
   };
-  const rndDay = (i) => pick(i, allMenus[Math.floor(Math.random()*allMenus.length)]);
+  const rndDay = (i) => {
+    const usedIds = new Set(Object.entries(selectedMenus).filter(([k])=>Number(k)!==i).map(([,m])=>m.id));
+    const pool = allMenus.filter(m=>!usedIds.has(m.id));
+    const menu = (pool.length>0 ? pool : allMenus)[Math.floor(Math.random()*(pool.length>0?pool.length:allMenus.length))];
+    pick(i, menu);
+  };
 
   const shopMap = () => {
     const map={};
